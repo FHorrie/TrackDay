@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1898184033011453962}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.56, y: 1.023, z: 1.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -46,12 +46,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _springStrength: 30000
-  _dampingDensity: 3000
-  _maxSpringOffset: 0.3
+  _dampingDensity: 4000
+  _maxSpringOffset: 0.2
   _restDist: 0.5
   _wheelRadius: 0.25
-  _tyreGripFactor: 0.65
-  _tyreWeight: 14
+  _isRightWheel: 0
+  _tyreGripCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.31129152
+      value: 0.8395691
+      inSlope: -0.32480237
+      outSlope: -0.32480237
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.14522591
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.52993774
+      value: 0.51726073
+      inSlope: -0.35961533
+      outSlope: -0.35961533
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.08919382
+    - serializedVersion: 3
+      time: 1
+      value: 0.45467407
+      inSlope: -0.13813946
+      outSlope: -0.13813946
+      tangentMode: 0
+      weightedMode: 1
+      inWeight: 0.14751291
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _tyreWeight: 60
+  _peakTorque: 14000
   _wheelVisualTransform: {fileID: 4511708772449962700}
 --- !u!1001 &4113605344236252455
 PrefabInstance:

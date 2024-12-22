@@ -15,7 +15,6 @@ public class CarMotion : MonoBehaviour
 
     private float _gearMaxSpeed = 0f;
 
-    private Vector3 _currentCarLocalVelocity;
     private float _carCurrentVelocityRatio = 0f;
     private float _carMaxVelocityRatio = 0f;
 
@@ -34,8 +33,14 @@ public class CarMotion : MonoBehaviour
     [SerializeField]
     private AnimationCurve _brakeCurve;
 
+
+    private CarWheel[] _allWheels;
+    
     [SerializeField]
     private CarWheel[] _steeringWheels;
+
+    [SerializeField]
+    private float _wheelTurnSpeed = 5;
 
     [SerializeField]
     private CarWheel[] _powerWheels;
@@ -59,6 +64,11 @@ public class CarMotion : MonoBehaviour
         get { return _maxSpeed; }
     }
 
+    public bool IsAccelerating
+    {
+        get { return _accelerateInput > 0.05f; }
+    }
+
     public float GearMaxSpeed
     {
         get { return _gearMaxSpeed; }
@@ -68,6 +78,27 @@ public class CarMotion : MonoBehaviour
     {
         get { return _carCurrentVelocityRatio; }
     }
+
+    public int TotalWheelCount
+    {
+        get { return _allWheels.Length; }
+    }
+
+    public int SteeringWheelCount
+    {
+        get { return _steeringWheels.Length; }
+    }
+
+    public int BrakingWheelCount
+    {
+        get { return _steeringWheels.Length; }
+    }
+
+    public int PowerWheelCount
+    {
+        get { return _steeringWheels.Length; }
+    }
+
 
     private void Start()
     {
@@ -80,42 +111,53 @@ public class CarMotion : MonoBehaviour
 
         _carRb.centerOfMass = _COM.localPosition;
 
+        _allWheels = GetComponentsInChildren<CarWheel>();
     }
 
     private void Update()
     {
         TurnWheels();
+        CalculateCarVelocity();
     }
 
     private void FixedUpdate()
     {
-        CalculateCarVelocity();
         Accelerate();
         Brake();
     }
 
     private void CalculateCarVelocity()
     {
-        _carCurrentVelocityRatio = Mathf.Clamp01(_carRb.velocity.sqrMagnitude / (_gearMaxSpeed * _gearMaxSpeed));
-        _carMaxVelocityRatio = Mathf.Clamp01(_carRb.velocity.sqrMagnitude / (_maxSpeed * _maxSpeed));
+        float currentForwardVelocity = Vector3.Dot(_carRb.velocity, transform.forward);
+        _carCurrentVelocityRatio = Mathf.Clamp(currentForwardVelocity / _gearMaxSpeed, -1f, 1f);
+        _carMaxVelocityRatio = Mathf.Clamp(currentForwardVelocity / _maxSpeed, -1f, 1f);
+
+        Debug.Log("currentForwardVelocity: " + currentForwardVelocity);
     }
 
     private void TurnWheels()
     {
+        float singleStep = Time.deltaTime * _maxSpeed;
+
         foreach(CarWheel wheel in _steeringWheels)
         {
-            if(wheel.Flipped)
-                wheel.transform.localRotation = Quaternion.Euler(0, _maxTyreAngleDeg * _steeringCurve.Evaluate(_carMaxVelocityRatio) * _steeringInput + 180, 0);
-            else
-                wheel.transform.localRotation = Quaternion.Euler(0, _maxTyreAngleDeg * _steeringCurve.Evaluate(_carMaxVelocityRatio) * _steeringInput, 0);
-        }
+            int input = 0;
+
+            if (wheel.IsLeftWheel)
+                input = 180;
+
+            wheel.transform.localRotation = 
+                Quaternion.Slerp(wheel.transform.localRotation, 
+                Quaternion.Euler(0, _maxTyreAngleDeg * _steeringCurve.Evaluate(_carMaxVelocityRatio) * _steeringInput + input, 0), 
+                singleStep);
+         }
     }
 
     private void Accelerate()
     {
         //Split available torque over power wheels
         float torquePerWheel = 1f;
-        int torqueSplit = 0;
+        float torqueSplit = 0f;
         foreach (CarWheel wheel in _powerWheels)
         {
             if (wheel.IsGrounded)
@@ -128,24 +170,17 @@ public class CarMotion : MonoBehaviour
         //Add torque to wheels
         foreach (CarWheel wheel in _powerWheels)
         {
-            if(_accelerateInput > 0.01f && _carCurrentVelocityRatio < 0.98f)
-            {
-                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * _accelerateInput * torquePerWheel * Mathf.Sign(_currentGear));
-            }
+            if(_accelerateInput > 0.01f && _carCurrentVelocityRatio < 0.99f)
+                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * _accelerateInput * torquePerWheel * Mathf.Sign(_currentGear) * Time.fixedDeltaTime * 100);
         }
     }
 
     private void Brake()
     {
-        if (_carCurrentVelocityRatio > 0.01f)
+        if (_carCurrentVelocityRatio > 0f)
             foreach (CarWheel wheel in _brakeWheels)
             {
-                wheel.BrakeFactor = wheel.BaseBrakeFactor + (float)Math.Clamp(_brakeCurve.Evaluate(_carCurrentVelocityRatio) * _reverseInput, 0, 1 - (double)wheel.BaseBrakeFactor);
-            }
-        else
-            foreach (CarWheel wheel in _brakeWheels)
-            {
-                wheel.BrakeFactor = wheel.BaseBrakeFactor;
+                wheel.BrakeFactor = _brakeCurve.Evaluate(_reverseInput) * Mathf.Clamp01(0.2f + _carCurrentVelocityRatio);
             }
     }
 
@@ -160,9 +195,6 @@ public class CarMotion : MonoBehaviour
         //Reverse Gear
         else
             _gearMaxSpeed = -_maxSpeed * _reverseGearRatio;
-
-        Debug.Log(_currentGear);
-        Debug.Log(_gearMaxSpeed);
     }
 
     #region inputHandling
