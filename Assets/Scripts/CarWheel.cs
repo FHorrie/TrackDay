@@ -4,24 +4,45 @@ using UnityEngine;
 
 public class CarWheel : MonoBehaviour
 {
+    #region Editor Fields
+    
     [SerializeField]
     private float _springStrength = 30000f;
-    [SerializeField]
 
     //use formula (2 * sqrt(K * mass) * Zeta) = dampingDensity 
     //Zeta between 0.2 and 1
     //Chosen values give (min: 2190), (max: 10954)
     
+    [SerializeField]
     private float _dampingDensity = 4800f;
+    
+    [SerializeField]
+    private float _tyreWeight = 14f;
+    
     [SerializeField]
     private float _maxSpringOffset = 0.3f;
+    
     [SerializeField]
     private float _restDist = 0.5f;
+    
     [SerializeField]
     private float _wheelRadius = 0.25f;
+    
+    [SerializeField]
+    private AnimationCurve _tyreGripCurve;
+    
+    [SerializeField]
+    private float _peakTorque = 6800f;
 
     [SerializeField]
-    private bool _isLeftWheel = false;
+    private Transform _wheelVisualTransform = null;
+    
+    [SerializeField]
+    private bool _shouldLog = false;
+    
+    #endregion
+    
+    #region Fields
 
     private Vector3 _groundedPoint;
     private Vector3 _contactPoint;
@@ -30,45 +51,30 @@ public class CarWheel : MonoBehaviour
 
     private CarMotion _carMotion = null;
 
-    [SerializeField]
-    private AnimationCurve _tyreGripCurve;
-
-    private float _brakeFactor = 0;
-    public const float BASEBRAKEFACTOR = 0.1f;
-    
-    [SerializeField]
-    private float _tyreWeight = 14f;
-
     private bool _isGrounded = false;
+    private float _brakeFactor = 0;
 
-    [SerializeField]
-    private float _peakTorque = 6800f;
+    public const float BaseBrakeFactor = 0.1f;
+    
+    #endregion
 
-    [SerializeField]
-    private Transform _wheelVisualTransform = null;
+    #region Properties
 
-    [SerializeField]
-    private bool _shouldLog = false;
-
-    public bool IsLeftWheel
-    {
-        get { return _isLeftWheel; }
-    }
-
-    public bool IsGrounded
-    {
-        get { return _isGrounded; }
-    }
+    public bool IsGrounded => _isGrounded;
 
     public float BrakeFactor
     {
-        get { return _brakeFactor; }
-        set { _brakeFactor = value; }
+        get => _brakeFactor;
+        set => _brakeFactor = value;
     }
+    
+    #endregion
 
+    #region Life Cycle
+    
     private void Awake()
     {
-        _brakeFactor = BASEBRAKEFACTOR;    
+        _brakeFactor = BaseBrakeFactor;
     }
 
     private void Start()
@@ -81,10 +87,14 @@ public class CarWheel : MonoBehaviour
         if (_carMotion == null)
             Debug.LogError("Motion script was not found");
     }
+    
+    #endregion
 
+    #region Methods
+    
     private void Update()
     {
-        RollTyre();
+        RollTyreVisual();
     }
 
     private void FixedUpdate()
@@ -158,8 +168,6 @@ public class CarWheel : MonoBehaviour
 
         //World space normal of the tyre (right vector)
         Vector3 tyreNormal = transform.right;
-        if (_isLeftWheel)
-            tyreNormal = -transform.right;
 
         //Tire velocity in steering dir
         //Note: springDir is unit vector
@@ -185,16 +193,13 @@ public class CarWheel : MonoBehaviour
         _carRb.AddForceAtPosition(tyreNormal * _tyreWeight * desiredAccel, _groundedPoint);
     }
 
-    public void UpdateFriction()
+    private void UpdateFriction()
     {
-
         //World space velocity of the suspension
         Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
 
         //World space direction of the spring force
         Vector3 forwardDir = transform.forward;
-        if (_isLeftWheel)
-            forwardDir = -transform.forward;
 
         //Tire velocity in steering dir
         //Note: springDir is unit vector
@@ -207,13 +212,12 @@ public class CarWheel : MonoBehaviour
         float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
 
         //F = Mass * Acceleration
-        _carRb.AddForceAtPosition(forwardDir * _tyreWeight * desiredAccel, _contactPoint);
-
+        _carRb.AddForceAtPosition(forwardDir * _tyreWeight * desiredAccel, _groundedPoint);
     }
 
-    private void RollTyre()
+    private void RollTyreVisual()
     {
-        _wheelVisualTransform.Rotate(Vector3.Dot(_carRb.velocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 0, 0);
+        _wheelVisualTransform.Rotate(Vector3.Dot(_carRb.linearVelocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 0, 0);
 
         //if(_shouldLog)
         //    Debug.Log("carVelocity: " + Vector3.Dot(_carRb.velocity, transform.forward));
@@ -222,11 +226,10 @@ public class CarWheel : MonoBehaviour
     public void ApplyTorque(float torqueAmount)
     {
         if (_isGrounded)
-        {
-            if (_isLeftWheel)
-                _carRb.AddForceAtPosition(-transform.forward * torqueAmount * _peakTorque, _contactPoint);
-            else
-                _carRb.AddForceAtPosition(transform.forward * torqueAmount * _peakTorque, _contactPoint);
+        { 
+            _carRb.AddForceAtPosition(transform.forward * torqueAmount * _peakTorque, _groundedPoint);
         }
     }
+    
+    #endregion
 }
