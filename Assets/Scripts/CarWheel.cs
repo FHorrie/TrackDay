@@ -38,21 +38,20 @@ public class CarWheel : MonoBehaviour
     private Transform _wheelVisualTransform = null;
     
     [SerializeField]
-    private bool _shouldLog = false;
+    private Rigidbody _carRb = null;
     
+    [SerializeField]
+    private CarMotion _carMotion = null;
+
     #endregion
     
     #region Fields
 
     private Vector3 _groundedPoint;
-    private Vector3 _contactPoint;
 
-    private Rigidbody _carRb = null;
-
-    private CarMotion _carMotion = null;
 
     private bool _isGrounded = false;
-    private float _brakeFactor = 0;
+    private float _brakeFactor;
 
     public const float BaseBrakeFactor = 0.1f;
     
@@ -62,30 +61,10 @@ public class CarWheel : MonoBehaviour
 
     public bool IsGrounded => _isGrounded;
 
-    public float BrakeFactor
-    {
-        get => _brakeFactor;
-        set => _brakeFactor = value;
-    }
-    
-    #endregion
-
-    #region Life Cycle
-    
-    private void Awake()
-    {
-        _brakeFactor = BaseBrakeFactor;
-    }
-
-    private void Start()
-    {
-        _carRb = GetComponentInParent<Rigidbody>();
-        if (_carRb == null)
-            Debug.LogError("Rigdbody was not found");
-
-        _carMotion = GetComponentInParent<CarMotion>();
-        if (_carMotion == null)
-            Debug.LogError("Motion script was not found");
+    public float BrakeFactor 
+    { 
+        get => _brakeFactor; 
+        set => _brakeFactor = value; 
     }
     
     #endregion
@@ -130,7 +109,7 @@ public class CarWheel : MonoBehaviour
     private void UpdateSuspension(RaycastHit hitInfo)
     {
         //World space direction of spring force
-        Vector3 springForceDir = transform.up;
+        Vector3 springForceDirection = transform.up;
 
         //World space velocity of the suspension
         Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
@@ -139,20 +118,17 @@ public class CarWheel : MonoBehaviour
         float springOffset = _restDist - hitInfo.distance;
 
         //Visual ground point
-        _groundedPoint = transform.position - springForceDir * (_restDist - springOffset);
-
-        //Contact point
-        _contactPoint = _groundedPoint - springForceDir * _wheelRadius;
+        _groundedPoint = transform.position - springForceDirection * (_restDist - springOffset);
 
         //Calc velocity along spring dir
         //Note: springDir is unit vector
-        float velocity = Vector3.Dot(springForceDir, tyreWorldVelocity);
+        float velocity = Vector3.Dot(springForceDirection, tyreWorldVelocity);
 
         //Calculate force using simple spring formula:
-        float force = (_springStrength * springOffset) - (velocity * _dampingDensity);
+        float springForce = (_springStrength * springOffset) - (velocity * _dampingDensity);
 
         //F = (Offset * SpringStrength) - (Vel * Damping)
-        _carRb.AddForceAtPosition(force * springForceDir, transform.position);
+        _carRb.AddForceAtPosition(springForce * springForceDirection, transform.position);
 
         //Match wheels to ray transform
         if (_wheelVisualTransform)
@@ -169,22 +145,16 @@ public class CarWheel : MonoBehaviour
         //World space normal of the tyre (right vector)
         Vector3 tyreNormal = transform.right;
 
-        //Tire velocity in steering dir
+        //Lateral velocity
         //Note: springDir is unit vector
-        float steeringVelocity = Vector3.Dot(tyreNormal, tyreWorldVelocity);
+        float lateralVelocity = Vector3.Dot(tyreNormal, tyreWorldVelocity);
 
-        Debug.DrawRay(transform.position, tyreNormal * steeringVelocity, Color.red, 1f, true);
-
-        float sideVelocityRatio = Mathf.Clamp01(steeringVelocity / _carMotion.GearMaxSpeed);
-        
-        if (_shouldLog)
-        {
-            Debug.Log("steeringVelocity: " + steeringVelocity);
-            Debug.Log("sideVelocityRatio: " + sideVelocityRatio);
-        }
+        float lateralVelocityRatio = Mathf.Clamp01(lateralVelocity / _carMotion.GearMaxSpeed);
+       
+        Debug.Log($"[CARWHEEL] lateralVelocity: {lateralVelocity}, lateralVelocityRatio: {lateralVelocityRatio}");
 
         //the change in velocity that we're looking for is -steeringVel * gripFactor
-        float desiredVelocityChange = -steeringVelocity * _tyreGripCurve.Evaluate(sideVelocityRatio);
+        float desiredVelocityChange = -lateralVelocity * _tyreGripCurve.Evaluate(lateralVelocityRatio);
 
         //change turn velocity into acceleration (vel / time)
         float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
@@ -199,11 +169,11 @@ public class CarWheel : MonoBehaviour
         Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
 
         //World space direction of the spring force
-        Vector3 forwardDir = transform.forward;
+        Vector3 forwardDirection = transform.forward;
 
         //Tire velocity in steering dir
         //Note: springDir is unit vector
-        float frictionVelocity = Vector3.Dot(forwardDir, tyreWorldVelocity);
+        float frictionVelocity = Vector3.Dot(forwardDirection, tyreWorldVelocity);
 
         //the change in velocity that we're looking for is -steeringVel * gripFactor
         float desiredVelocityChange = -frictionVelocity * _brakeFactor;
@@ -212,7 +182,7 @@ public class CarWheel : MonoBehaviour
         float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
 
         //F = Mass * Acceleration
-        _carRb.AddForceAtPosition(forwardDir * _tyreWeight * desiredAccel, _groundedPoint);
+        _carRb.AddForceAtPosition(forwardDirection * _tyreWeight * desiredAccel, _groundedPoint);
     }
 
     private void RollTyreVisual()
@@ -229,6 +199,12 @@ public class CarWheel : MonoBehaviour
         { 
             _carRb.AddForceAtPosition(transform.forward * torqueAmount * _peakTorque, _groundedPoint);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position, _carRb.GetPointVelocity(transform.position));
     }
     
     #endregion

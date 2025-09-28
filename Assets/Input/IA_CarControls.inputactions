@@ -45,7 +45,7 @@
                     "name": "ShiftUp",
                     "type": "Button",
                     "id": "02694297-e0a4-4d81-b113-d7ecf18a8fbd",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,7 +54,16 @@
                     "name": "ShiftDown",
                     "type": "Button",
                     "id": "f9321ba6-ed00-407b-9cc5-427629ff15c0",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ResetCar",
+                    "type": "Button",
+                    "id": "3f982a6d-b155-4871-84e3-aafc930a3d2c",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -212,6 +221,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ShiftDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d170d794-4f0b-4482-927f-f78df4e3f367",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ResetCar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "123f082b-1e7f-4028-9683-5b7c4258a0aa",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ResetCar",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
