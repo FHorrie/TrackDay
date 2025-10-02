@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 886948378976588682}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000024473215, y: -0.9849676, z: 0.1727395, w: 0.0000013954726}
+  m_LocalRotation: {x: -0.00000046857082, y: 0.9849675, z: -0.17273955, w: -0.0000026533794}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -189,8 +189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69a410e4b0d6214e98027159fd3eb17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxTyreAngleDeg: 40
-  _maxSpeed: 18
   _torqueCurve:
     serializedVersion: 2
     m_Curve:
@@ -213,8 +211,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.65
-      value: 1.001308
+      time: 0.8
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -223,36 +221,12 @@ MonoBehaviour:
       outWeight: 0.4538271
     - serializedVersion: 3
       time: 1
-      value: 0.3
+      value: 0.7
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 1
       inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _steeringCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 2
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 1
-      inWeight: 0.45275262
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -281,10 +255,33 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _frictionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.3
+      inSlope: 0.5650384
+      outSlope: 0.5650384
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.042631567
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _steeringWheels:
   - {fileID: 5277823093535882594}
   - {fileID: 6214503481217079746}
-  _wheelTurnSpeed: 4
   _powerWheels:
   - {fileID: 3562748547966284281}
   - {fileID: 8446388430436729070}
@@ -293,10 +290,16 @@ MonoBehaviour:
   - {fileID: 5277823093535882594}
   - {fileID: 8446388430436729070}
   - {fileID: 3562748547966284281}
+  _COM: {fileID: 8627507692886464587}
+  _freeLook: {fileID: 665610770241876433}
+  _maxTyreAngleDeg: 40
+  _maxSpeed: 18
+  _wheelTurnSpeed: 3
+  _baseFov: 60
+  _increaseFov: 30
   _forwardGearRatios:
   - 1
   _reverseGearRatio: 0.3
-  _COM: {fileID: 8627507692886464587}
 --- !u!1 &1771976095913040563
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,7 +452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2961193422862370609}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000057525403, y: -0.9795777, z: 0.20106587, w: 0.000002802594}
+  m_LocalRotation: {x: -0.00000054137445, y: 0.9795778, z: -0.20106585, w: -0.0000026224852}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -528,7 +531,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3778535727046807455}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000022655057, y: -0.9895109, z: 0.14445822, w: 0.0000015518278}
+  m_LocalRotation: {x: -0.00000039075653, y: 0.9895109, z: -0.14445817, w: -0.0000026794216}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -840,11 +843,11 @@ MonoBehaviour:
   m_SplineCurvature: 0.306
   m_Orbits:
   - m_Height: 3
-    m_Radius: 2
+    m_Radius: 3
   - m_Height: 1.5
     m_Radius: 3.5
-  - m_Height: 0.6
-    m_Radius: 2
+  - m_Height: 0.8
+    m_Radius: 2.5
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 8228337634565225155}
@@ -1137,6 +1140,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _restDistance
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _dampingDensity
       value: 5000
       objectReference: {fileID: 0}
@@ -1173,8 +1180,16 @@ PrefabInstance:
       value: -0.70385355
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[3].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outSlope
       value: -0.70385355
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[3].outSlope
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outWeight
@@ -1370,6 +1385,10 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _restDistance
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _dampingDensity
       value: 5000
       objectReference: {fileID: 0}
@@ -1406,8 +1425,16 @@ PrefabInstance:
       value: -0.70385355
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[3].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outSlope
       value: -0.70385355
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[3].outSlope
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outWeight
@@ -1507,6 +1534,10 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _restDistance
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _dampingDensity
       value: 5000
       objectReference: {fileID: 0}
@@ -1520,7 +1551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].time
-      value: 0.2795851
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].time
@@ -1528,7 +1559,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].value
-      value: 0.54652566
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].value
@@ -1536,7 +1567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].inSlope
-      value: -0.3493402
+      value: -0.52862203
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].inSlope
@@ -1544,23 +1575,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].inWeight
-      value: 0.15643194
+      value: 0.34626412
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outSlope
-      value: -0.3493402
+      value: -0.52862203
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].inWeight
-      value: 0.14751291
+      value: 0.16210204
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].outSlope
       value: -0.13813946
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[0].outWeight
+      value: 0.2939474
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outWeight
+      value: 0.4314944
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].outWeight
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[0].weightedMode
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].weightedMode
@@ -1700,6 +1743,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _restDistance
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _dampingDensity
       value: 5000
       objectReference: {fileID: 0}
@@ -1713,7 +1760,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].time
-      value: 0.2795851
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].time
@@ -1721,7 +1768,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].value
-      value: 0.54652566
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].value
@@ -1729,7 +1776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].inSlope
-      value: -0.3493402
+      value: -0.52862203
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].inSlope
@@ -1737,23 +1784,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].inWeight
-      value: 0.15643194
+      value: 0.34626412
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outSlope
-      value: -0.3493402
+      value: -0.52862203
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].inWeight
-      value: 0.14751291
+      value: 0.16210204
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].outSlope
       value: -0.13813946
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[0].outWeight
+      value: 0.2939474
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[1].outWeight
+      value: 0.4314944
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].outWeight
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
+      propertyPath: _tyreGripCurve.m_Curve.Array.data[0].weightedMode
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5495517493507224497, guid: a734a515b5959494f82e3b28818d115e, type: 3}
       propertyPath: _tyreGripCurve.m_Curve.Array.data[2].weightedMode

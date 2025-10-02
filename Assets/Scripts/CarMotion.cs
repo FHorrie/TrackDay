@@ -1,3 +1,5 @@
+using System;
+using Cinemachine;
 using RaceGame.Helpers;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,10 +10,6 @@ namespace RaceGame
     {
         #region Editor Fields
 
-        [SerializeField]
-        private float _maxTyreAngleDeg = 50f;
-        [SerializeField]
-        private float _maxSpeed = 20f;
 
         [SerializeField]
         private AnimationCurve _torqueCurve;
@@ -20,16 +18,36 @@ namespace RaceGame
         private AnimationCurve _brakeCurve;
 
         [SerializeField]
-        private CarWheel[] _steeringWheels;
+        private AnimationCurve _frictionCurve;
 
         [SerializeField]
-        private float _wheelTurnSpeed = 5;
+        private CarWheel[] _steeringWheels;
 
         [SerializeField]
         private CarWheel[] _powerWheels;
 
         [SerializeField]
         private CarWheel[] _brakeWheels;
+        
+        [SerializeField]
+        private Transform _COM;
+
+        [SerializeField]
+        private CinemachineFreeLook _freeLook;
+
+        [SerializeField]
+        private float _maxTyreAngleDeg = 50f;
+        [SerializeField]
+        private float _maxSpeed = 20f;
+
+        [SerializeField]
+        private float _wheelTurnSpeed = 5;
+
+        [SerializeField]
+        private float _baseFov = 60f;
+
+        [SerializeField]
+        private float _increaseFov = 30f;
 
         [SerializeField]
         private float[] _forwardGearRatios;
@@ -37,26 +55,23 @@ namespace RaceGame
         [SerializeField]
         private float _reverseGearRatio = 0;
 
-        [SerializeField]
-        private Transform _COM;
-
         #endregion
 
         #region Fields
 
-        private float _gearMaxSpeed = 0f;
+        private Rigidbody _carRb = null;
 
+        private float _gearMaxSpeed = 0f;
         private float _carCurrentVelocityRatio = 0f;
         private float _carMaxVelocityRatio = 0f;
-
-        private Rigidbody _carRb = null;
 
         private float _accelerateInput = 0f;
         private float _reverseInput = 0f;
         private float _steeringInput = 0f;
 
-
         private int _currentGear = 0;
+
+        private bool _updateCamera;
 
         #endregion
 
@@ -76,6 +91,8 @@ namespace RaceGame
 
         public int PowerWheelCount => _steeringWheels.Length;
 
+        public float CurrentFriction => _frictionCurve.Evaluate(_carMaxVelocityRatio);
+
         #endregion
 
         #region Life Cycle
@@ -86,10 +103,17 @@ namespace RaceGame
             if (_carRb == null)
             {
                 Debug.LogError("Rigdbody was not found");
-                return;
+            }
+            else
+            {
+                _carRb.centerOfMass = _COM.localPosition;
             }
 
-            _carRb.centerOfMass = _COM.localPosition;
+            if(_freeLook != null)
+            {
+                _updateCamera = true;
+            }
+
         }
 
         #endregion
@@ -99,6 +123,7 @@ namespace RaceGame
         private void Update()
         {
             TurnWheels();
+            UpdateCamera();
         }
 
         private void FixedUpdate()
@@ -106,15 +131,6 @@ namespace RaceGame
             CalculateCarVelocity();
             Accelerate();
             Brake();
-        }
-
-        private void CalculateCarVelocity()
-        {
-            float currentForwardVelocity = Vector3.Dot(_carRb.linearVelocity, transform.forward);
-            _carCurrentVelocityRatio = Mathf.Clamp(currentForwardVelocity / _gearMaxSpeed, -1f, 1f);
-            _carMaxVelocityRatio = Mathf.Clamp(currentForwardVelocity / _maxSpeed, -1f, 1f);
-
-            Debug.Log($"[CARMOTION] Current forward velocity: {currentForwardVelocity:0.00}");
         }
 
         private void TurnWheels()
@@ -127,9 +143,26 @@ namespace RaceGame
 
                 wheel.transform.localRotation =
                     Quaternion.Slerp(wheel.transform.localRotation,
-                    Quaternion.Euler(0, _maxTyreAngleDeg * Easings.InOutSine(_carMaxVelocityRatio) * _steeringInput, 0),
+                    Quaternion.Euler(0, _maxTyreAngleDeg * _steeringInput, 0),
                     singleStep);
             }
+        }
+
+        private void UpdateCamera()
+        {
+            if(_updateCamera == false) return;
+
+            // Increase camera FOV with speed (game feel fast )
+            _freeLook.m_Lens.FieldOfView = _baseFov + _increaseFov * _carMaxVelocityRatio;
+        }
+
+        private void CalculateCarVelocity()
+        {
+            float currentForwardVelocity = Vector3.Dot(_carRb.linearVelocity, transform.forward);
+            _carCurrentVelocityRatio = Mathf.Clamp(currentForwardVelocity / _gearMaxSpeed, -1f, 1f);
+            _carMaxVelocityRatio = Mathf.Clamp(currentForwardVelocity / _maxSpeed, -1f, 1f);
+
+            Debug.Log($"[CARMOTION] Current forward velocity: {currentForwardVelocity:0.00}");
         }
 
         private void Accelerate()
@@ -149,8 +182,7 @@ namespace RaceGame
             // Add torque to wheels
             foreach (CarWheel wheel in _powerWheels)
             {
-                if (_accelerateInput > 0f && _carCurrentVelocityRatio < 1f)
-                    wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * _accelerateInput * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
+                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_accelerateInput - _reverseInput)  * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
             }
         }
 

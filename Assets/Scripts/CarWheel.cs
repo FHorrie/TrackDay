@@ -7,11 +7,14 @@ namespace RaceGame
         #region Editor Fields
 
         [SerializeField]
+        private CarMotion _carMotion = null;
+
+        [SerializeField]
         private float _springStrength = 30000f;
 
         //use formula (2 * sqrt(K * mass) * Zeta) = dampingDensity 
         //Zeta between 0.2 and 1
-        //Chosen values give (min: 2190), (max: 10954)
+        //With 1.4 tonne weight = damping (min: 2190), (max: 10954)
 
         [SerializeField]
         private float _dampingDensity = 4800f;
@@ -23,7 +26,7 @@ namespace RaceGame
         private float _maxSpringOffset = 0.3f;
 
         [SerializeField]
-        private float _restDist = 0.5f;
+        private float _restDistance = 0.5f;
 
         [SerializeField]
         private float _wheelRadius = 0.25f;
@@ -39,9 +42,6 @@ namespace RaceGame
 
         [SerializeField]
         private Rigidbody _carRb = null;
-
-        [SerializeField]
-        private CarMotion _carMotion = null;
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace RaceGame
             if (_carRb == null)
                 return;
 
-            float maxLength = _restDist + _maxSpringOffset;
+            float maxLength = _restDistance + _maxSpringOffset;
 
             bool rayDidHit = Physics.SphereCast(transform.position, _wheelRadius, -transform.up, out RaycastHit hitInfo, maxLength - _wheelRadius);
 
@@ -101,8 +101,7 @@ namespace RaceGame
             else
             {
                 _isGrounded = false;
-
-                _wheelVisualTransform.position = transform.position - transform.up * (-_wheelRadius + _restDist + _maxSpringOffset);
+                _wheelVisualTransform.position = transform.position - transform.up * (-_wheelRadius + _restDistance + _maxSpringOffset);
             }
         }
 
@@ -115,10 +114,10 @@ namespace RaceGame
             Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
 
             //Calculate spring offset
-            float springOffset = _restDist - hitInfo.distance;
+            float springOffset = _restDistance - hitInfo.distance;
 
             //Visual ground point
-            _groundedPoint = transform.position - springForceDirection * (_restDist - springOffset);
+            _groundedPoint = transform.position - springForceDirection * (_restDistance - springOffset);
 
             //Calculate velocity along spring direction
             //Note: springForceDirection is aunit vector
@@ -173,7 +172,7 @@ namespace RaceGame
             float negativeTyreVelocity = Vector3.Dot(-forwardDirection, tyreWorldVelocity);
 
             //the change in velocity that we're looking for is negative velocity * friction factor
-            float desiredVelocityChange = negativeTyreVelocity * 0.1f;
+            float desiredVelocityChange = negativeTyreVelocity * _carMotion.CurrentFriction;
 
             //change turn velocity into acceleration (vel / time)
             float desiredAcceleration = desiredVelocityChange / Time.fixedDeltaTime;
