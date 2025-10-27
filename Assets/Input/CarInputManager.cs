@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputManager : MonoBehaviour
+public class CarInputManager : MonoBehaviour
 {
     #region Fields
 
@@ -17,12 +17,36 @@ public class PlayerInputManager : MonoBehaviour
 
     #region Properties
 
-    public float AccelerateInput =>_accelerateInput;
-    public float ReverseInput =>_reverseInput;
-    public float SteeringInput => _steeringInput;
-    public bool ShiftUpInput => _shiftUpInput;
-    public bool ShiftDownInput => _shiftDownInput;
-    public bool ResetInput => _resetInput;
+    public float AccelerateInput
+    {
+        get => _accelerateInput;
+        set => _accelerateInput = value;
+    }
+    public float ReverseInput
+    {
+        get => _reverseInput;
+        set => _reverseInput = value;
+    }
+    public float SteeringInput
+    {
+        get => _steeringInput;
+        set => _steeringInput = value;
+    }
+    public bool ShiftUpInput
+    {
+        get => _shiftUpInput;
+        set => _shiftUpInput = value;
+    }
+    public bool ShiftDownInput
+    {
+        get => _shiftDownInput;
+        set => _shiftDownInput = value;
+    }
+    public bool ResetInput
+    {
+        get => _resetInput;
+        set => _resetInput = value;
+    }
 
     #endregion
 

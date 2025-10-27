@@ -11,7 +11,7 @@ namespace RaceGame
         #region Editor Fields
 
         [SerializeField]
-        private PlayerInputManager _playerInput;
+        private CarInputManager _playerInput;
 
         [SerializeField]
         private AnimationCurve _torqueCurve;
