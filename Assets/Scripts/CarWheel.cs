@@ -49,7 +49,6 @@ namespace RaceGame
 
         private Vector3 _groundedPoint;
 
-
         private bool _isGrounded = false;
         private float _brakeFactor;
 
@@ -150,7 +149,10 @@ namespace RaceGame
 
             float lateralVelocityRatio = Mathf.Clamp01(lateralVelocity / _carMotion.GearMaxSpeed);
 
-            Debug.Log($"[CARWHEEL] lateralVelocity: {lateralVelocity}, lateralVelocityRatio: {lateralVelocityRatio}");
+            
+            // DEBUG LOG ////////////////////////////////////////////////////////////////////////////////////////////////
+            // Debug.Log($"[CARWHEEL] lateralVelocity: {lateralVelocity}, lateralVelocityRatio: {lateralVelocityRatio}");
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //the change in velocity that we're looking for is -steeringVel * gripFactor
             float desiredVelocityChange = -lateralVelocity * _tyreGripCurve.Evaluate(lateralVelocityRatio);

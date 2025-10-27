@@ -10,6 +10,8 @@ namespace RaceGame
     {
         #region Editor Fields
 
+        [SerializeField]
+        private PlayerInputManager _playerInput;
 
         [SerializeField]
         private AnimationCurve _torqueCurve;
@@ -65,10 +67,6 @@ namespace RaceGame
         private float _carCurrentVelocityRatio = 0f;
         private float _carMaxVelocityRatio = 0f;
 
-        private float _accelerateInput = 0f;
-        private float _reverseInput = 0f;
-        private float _steeringInput = 0f;
-
         private int _currentGear = 0;
 
         private bool _updateCamera;
@@ -79,7 +77,7 @@ namespace RaceGame
 
         public float MaxSpeed => _maxSpeed;
 
-        public bool IsAccelerating => _accelerateInput > 0.01f;
+        public bool IsAccelerating => _playerInput.AccelerateInput > 0.01f;
 
         public float GearMaxSpeed => _gearMaxSpeed;
 
@@ -114,6 +112,16 @@ namespace RaceGame
                 _updateCamera = true;
             }
 
+            _playerInput.ShiftUpPressed += ShiftUp;
+            _playerInput.ShiftUpPressed += ShiftDown;
+            _playerInput.ResetPressed += ResetCar;
+        }
+
+        private void OnDestroy()
+        {
+            _playerInput.ShiftUpPressed -= ShiftUp;
+            _playerInput.ShiftUpPressed -= ShiftDown;
+            _playerInput.ResetPressed -= ResetCar;
         }
 
         #endregion
@@ -135,7 +143,7 @@ namespace RaceGame
 
         private void TurnWheels()
         {
-            float singleStep = Time.deltaTime * _maxSpeed;
+            float singleStep = Time.deltaTime * _wheelTurnSpeed;
 
             for (int i = 0; i < _steeringWheels.Length; ++i)
             {
@@ -143,7 +151,7 @@ namespace RaceGame
 
                 wheel.transform.localRotation =
                     Quaternion.Slerp(wheel.transform.localRotation,
-                    Quaternion.Euler(0, _maxTyreAngleDeg * _steeringInput, 0),
+                    Quaternion.Euler(0, _maxTyreAngleDeg * _playerInput.SteeringInput, 0),
                     singleStep);
             }
         }
@@ -182,7 +190,7 @@ namespace RaceGame
             // Add torque to wheels
             foreach (CarWheel wheel in _powerWheels)
             {
-                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_accelerateInput - _reverseInput)  * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
+                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_playerInput.AccelerateInput - _playerInput.ReverseInput) * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
             }
         }
 
@@ -192,7 +200,7 @@ namespace RaceGame
             {
                 for (int i = 0; i < _brakeWheels.Length; ++i)
                 {
-                    _brakeWheels[i].BrakeFactor = _brakeCurve.Evaluate(_reverseInput) * Mathf.Clamp01(CarWheel.BaseBrakeFactor + _carCurrentVelocityRatio);
+                    _brakeWheels[i].BrakeFactor = _brakeCurve.Evaluate(_playerInput.ReverseInput) * Mathf.Clamp01(CarWheel.BaseBrakeFactor + _carCurrentVelocityRatio);
                 }
             }
         }
@@ -210,24 +218,9 @@ namespace RaceGame
                 _gearMaxSpeed = -_maxSpeed * _reverseGearRatio;
         }
 
-        #region Input Handling
+        #region Input Related
 
-        private void OnDrive(InputValue triggerValue)
-        {
-            _accelerateInput = triggerValue.Get<float>();
-        }
-
-        private void OnBrake(InputValue triggerValue)
-        {
-            _reverseInput = triggerValue.Get<float>();
-        }
-
-        private void OnSteering(InputValue stickValue)
-        {
-            _steeringInput = stickValue.Get<float>();
-        }
-
-        private void OnShiftUp(InputValue buttonValue)
+        private void ShiftUp()
         {
             if (_currentGear < _forwardGearRatios.Length)
             {
@@ -237,7 +230,7 @@ namespace RaceGame
 
         }
 
-        private void OnShiftDown(InputValue buttonValue)
+        private void ShiftDown()
         {
             if (_currentGear > -1)
             {
@@ -246,7 +239,7 @@ namespace RaceGame
             }
         }
 
-        private void OnResetCar()
+        private void ResetCar()
         {
             transform.up = Vector3.up;
             transform.position += Vector3.up * 5;

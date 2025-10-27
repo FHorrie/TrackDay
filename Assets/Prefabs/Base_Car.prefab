@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 4880956129936014312}
   - component: {fileID: 8568208116209950426}
   - component: {fileID: 2199120096590606326}
+  - component: {fileID: 973599185943077719}
   m_Layer: 0
   m_Name: Base_Car
   m_TagString: Untagged
@@ -189,6 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69a410e4b0d6214e98027159fd3eb17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerInput: {fileID: 973599185943077719}
   _torqueCurve:
     serializedVersion: 2
     m_Curve:
@@ -300,6 +302,18 @@ MonoBehaviour:
   _forwardGearRatios:
   - 1
   _reverseGearRatio: 0.3
+--- !u!114 &973599185943077719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438221817917864337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469c6b5b488e2e940b344e6da9dbd140, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771976095913040563
 GameObject:
   m_ObjectHideFlags: 0
