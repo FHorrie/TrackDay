@@ -35,17 +35,38 @@ public class CarInputManager : MonoBehaviour
     public bool ShiftUpInput
     {
         get => _shiftUpInput;
-        set => _shiftUpInput = value;
+        set
+        {
+            if (_shiftUpInput == false && value == true)
+            {
+                ShiftUpPressed?.Invoke();
+            }
+            _shiftUpInput = value;
+        }
     }
     public bool ShiftDownInput
     {
         get => _shiftDownInput;
-        set => _shiftDownInput = value;
+        set
+        {
+            if (_shiftDownInput == false && value == true)
+            {
+                ShiftDownPressed?.Invoke();
+            }
+            _shiftDownInput = value;
+        }
     }
     public bool ResetInput
     {
         get => _resetInput;
-        set => _resetInput = value;
+        set 
+        {
+            if (_resetInput == false && value == true)
+            {
+                ResetPressed?.Invoke();
+            }
+            _resetInput = value;
+        } 
     }
 
     #endregion
@@ -62,42 +83,27 @@ public class CarInputManager : MonoBehaviour
 
     private void OnDrive(InputValue triggerValue)
     {
-        _accelerateInput = triggerValue.Get<float>();
+        AccelerateInput = triggerValue.Get<float>();
     }
     private void OnBrake(InputValue triggerValue)
     {
-        _reverseInput = triggerValue.Get<float>();
+        ReverseInput = triggerValue.Get<float>();
     }
     private void OnSteering(InputValue stickValue)
     {
-        _steeringInput = stickValue.Get<float>();
+        SteeringInput = stickValue.Get<float>();
     }
     private void OnShiftUp(InputValue buttonValue)
     {
-        bool value = buttonValue.Get<float>() > 0.5f;
-        if (_shiftUpInput == false && value == true)
-        {
-            ResetPressed?.Invoke();
-        }
-        _shiftUpInput = value;
+        ShiftUpInput = buttonValue.Get<float>() > 0.5f;
     }
     private void OnShiftDown(InputValue buttonValue)
     {
-        bool value = buttonValue.Get<float>() > 0.5f;
-        if (_shiftDownInput == false && value == true)
-        {
-            ResetPressed?.Invoke();
-        }
-        _shiftDownInput = value;
+        ShiftDownInput = buttonValue.Get<float>() > 0.5f;
     }
     private void OnResetCar(InputValue buttonValue)
     {
-        bool value = buttonValue.Get<float>() > 0.5f;
-        if(_resetInput == false && value == true)
-        {
-            ResetPressed?.Invoke();
-        }
-        _resetInput = value;
+        ResetInput = buttonValue.Get<float>() > 0.5f;
     }
 
     #endregion
