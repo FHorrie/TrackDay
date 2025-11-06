@@ -95,6 +95,17 @@
                 },
                 {
                     "name": "",
+                    "id": "4216ffa3-73ab-4ce3-aa49-3abcff749dea",
+                    "path": "<Joystick>/stick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drive",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "02c906d7-7820-46c6-973a-656e6ef3a52b",
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
@@ -108,6 +119,17 @@
                     "name": "",
                     "id": "2e2ac426-d02c-4b31-94e4-06e9ffdb0ddb",
                     "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Brake",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9f80a544-58bd-4977-b509-e5d93a9f5450",
+                    "path": "<Joystick>/stick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -161,6 +183,17 @@
                 },
                 {
                     "name": "",
+                    "id": "32a52a39-0930-4b71-a600-179752760d9f",
+                    "path": "<Joystick>/stick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steering",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a7d26014-a063-4c3b-9b1b-40eb007c7fb4",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -175,7 +208,7 @@
                     "id": "ef6a1302-aa1d-4301-8c72-19eb43426812",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,
