@@ -15,6 +15,17 @@ public class CarInputManager : MonoBehaviour
 
     #endregion
 
+    #region Properties
+
+    public float AccelerateInput => _accelerateInput;
+    public float ReverseInput => _reverseInput;
+    public float SteeringInput => _steeringInput;
+    public bool ShiftUpInput =>_shiftUpInput;
+    public bool ShiftDownInput => _shiftDownInput;
+    public bool ResetInput => _resetInput;
+
+    #endregion
+
     #region Events
 
     public event Action ShiftDownPressed;
