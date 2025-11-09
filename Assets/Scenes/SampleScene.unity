@@ -237,6 +237,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 57490261742951884, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4f45711dac60e9548b807b48ad1910a1, type: 2}
+    - target: {fileID: 57490261742951884, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4f45711dac60e9548b807b48ad1910a1, type: 2}
     - target: {fileID: 665610770241876433, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
       propertyPath: m_XAxis.m_MaxSpeed
       value: 3
@@ -249,6 +257,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Base_Car
       objectReference: {fileID: 0}
+    - target: {fileID: 2199120096590606326, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+      propertyPath: _vehicleRenderer
+      value: 
+      objectReference: {fileID: 307036336}
     - target: {fileID: 4768826831282265705, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
       propertyPath: m_LocalRotation.w
       value: -0.0000026224852
@@ -530,6 +542,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1637598638}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!23 &307036336 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 57490261742951884, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+  m_PrefabInstance: {fileID: 153193213}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &489261789
 GameObject:
   m_ObjectHideFlags: 0
@@ -2719,7 +2736,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1001 &2008489250125395103
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2766,7 +2783,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5871420869672162854, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6347131770209178598, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
       propertyPath: m_Pivot.x

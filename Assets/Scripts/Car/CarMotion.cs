@@ -30,12 +30,15 @@ namespace RaceGame
 
         [SerializeField]
         private CarWheel[] _brakeWheels;
-        
+
         [SerializeField]
         private Transform _COM;
 
         [SerializeField]
         private CinemachineFreeLook _freeLook;
+
+        [SerializeField]
+        private MeshRenderer _vehicleRenderer;
 
         [SerializeField]
         private float _maxTyreAngleDeg = 50f;
@@ -64,12 +67,17 @@ namespace RaceGame
         private Rigidbody _carRb = null;
 
         private float _gearMaxSpeed = 0f;
+        private float _carForwardVelocity = 0f;
         private float _carCurrentVelocityRatio = 0f;
         private float _carMaxVelocityRatio = 0f;
 
         private int _currentGear = 0;
 
         private bool _updateCamera;
+        private bool _isBraking;
+
+        private MaterialPropertyBlock _rearLightsPropertyBlock;
+        private int _materialColorId = Shader.PropertyToID("_Color");
 
         #endregion
 
@@ -107,7 +115,12 @@ namespace RaceGame
                 _carRb.centerOfMass = _COM.localPosition;
             }
 
-            if(_freeLook != null)
+            _rearLightsPropertyBlock = new MaterialPropertyBlock();
+            _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsInActiveColor);
+            _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
+            _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+
+            if (_freeLook != null)
             {
                 _updateCamera = true;
             }
@@ -132,13 +145,13 @@ namespace RaceGame
         {
             TurnWheels();
             UpdateCamera();
+            BrakeLights();
         }
 
         private void FixedUpdate()
         {
             CalculateCarVelocity();
             Accelerate();
-            Brake();
         }
 
         private void TurnWheels()
@@ -166,11 +179,11 @@ namespace RaceGame
 
         private void CalculateCarVelocity()
         {
-            float currentForwardVelocity = Vector3.Dot(_carRb.linearVelocity, transform.forward);
-            _carCurrentVelocityRatio = Mathf.Clamp(currentForwardVelocity / _gearMaxSpeed, -1f, 1f);
-            _carMaxVelocityRatio = Mathf.Clamp(currentForwardVelocity / _maxSpeed, -1f, 1f);
+            _carForwardVelocity = Vector3.Dot(_carRb.linearVelocity, transform.forward);
+            _carCurrentVelocityRatio = Mathf.Clamp(_carForwardVelocity / _gearMaxSpeed, -1f, 1f);
+            _carMaxVelocityRatio = Mathf.Clamp(_carForwardVelocity / _maxSpeed, -1f, 1f);
 
-            Debug.Log($"[CARMOTION] Current forward velocity: {currentForwardVelocity:0.00}");
+            Debug.Log($"[CARMOTION] Current forward velocity: {_carForwardVelocity:0.00}");
         }
 
         private void Accelerate()
@@ -194,14 +207,23 @@ namespace RaceGame
             }
         }
 
-        private void Brake()
+        private void BrakeLights()
         {
-            if (_carCurrentVelocityRatio > 0f)
+            if(_isBraking == false && _playerInput.ReverseInput >= 0.1f && _carForwardVelocity > 0f)
             {
-                for (int i = 0; i < _brakeWheels.Length; ++i)
-                {
-                    _brakeWheels[i].BrakeFactor = _brakeCurve.Evaluate(_playerInput.ReverseInput) * Mathf.Clamp01(CarWheel.BaseBrakeFactor + _carCurrentVelocityRatio);
-                }
+                _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsActiveColor);
+                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
+                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+
+                _isBraking = true;
+            }
+            else if(_isBraking && (_playerInput.ReverseInput < 0.1f || _carForwardVelocity < 0f))
+            {
+                _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsInActiveColor);
+                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
+                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+                
+                _isBraking = false;
             }
         }
 
