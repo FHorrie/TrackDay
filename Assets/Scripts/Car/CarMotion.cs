@@ -10,6 +10,7 @@ namespace RaceGame
     {
         #region Editor Fields
 
+        [Header("Car Logic")]
         [SerializeField]
         private CarInputManager _playerInput;
 
@@ -38,9 +39,6 @@ namespace RaceGame
         private CinemachineFreeLook _freeLook;
 
         [SerializeField]
-        private MeshRenderer _vehicleRenderer;
-
-        [SerializeField]
         private float _maxTyreAngleDeg = 50f;
         [SerializeField]
         private float _maxSpeed = 20f;
@@ -60,24 +58,40 @@ namespace RaceGame
         [SerializeField]
         private float _reverseGearRatio = 0;
 
+        [Header("Car Visuals")]
+        [SerializeField]
+        private MeshRenderer _vehicleRenderer;
+
+        [Space]
+        [SerializeField]
+        private Color _brakeLightsActiveColor;
+        [SerializeField]
+        private Color _brakeLightsInactiveColor;
+
+        [Space]
+        [SerializeField]
+        private Color _reverseLightsActiveColor;
+        [SerializeField]
+        private Color _reverseLightsInactiveColor;
+
         #endregion
 
         #region Fields
 
-        private Rigidbody _carRb = null;
+        private bool _updateCamera;
+        private bool _isBraking;
+        private bool _isReversing;
+
+        private int _currentGear = 0;
 
         private float _gearMaxSpeed = 0f;
         private float _carForwardVelocity = 0f;
         private float _carCurrentVelocityRatio = 0f;
         private float _carMaxVelocityRatio = 0f;
 
-        private int _currentGear = 0;
-
-        private bool _updateCamera;
-        private bool _isBraking;
-
-        private MaterialPropertyBlock _rearLightsPropertyBlock;
-        private int _materialColorId = Shader.PropertyToID("_Color");
+        private Rigidbody _carRb = null;
+        private MaterialPropertyBlock _brakeLightsPropertyBlock;
+        private MaterialPropertyBlock _reverseLightsPropertyBlock;
 
         #endregion
 
@@ -115,10 +129,7 @@ namespace RaceGame
                 _carRb.centerOfMass = _COM.localPosition;
             }
 
-            _rearLightsPropertyBlock = new MaterialPropertyBlock();
-            _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsInActiveColor);
-            _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
-            _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+            InitializePropertyBlocks();
 
             if (_freeLook != null)
             {
@@ -128,6 +139,19 @@ namespace RaceGame
             _playerInput.ShiftUpPressed += ShiftUp;
             _playerInput.ShiftUpPressed += ShiftDown;
             _playerInput.ResetPressed += ResetCar;
+        }
+
+        private void InitializePropertyBlocks()
+        {
+            _brakeLightsPropertyBlock = new MaterialPropertyBlock();
+            _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsInactiveColor);
+            _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
+            _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
+
+            _reverseLightsPropertyBlock = new MaterialPropertyBlock();
+            _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsInactiveColor);
+            _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
+            _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
         }
 
         private void OnDestroy()
@@ -145,7 +169,7 @@ namespace RaceGame
         {
             TurnWheels();
             UpdateCamera();
-            BrakeLights();
+            RearLightsVisualUpdate();
         }
 
         private void FixedUpdate()
@@ -183,47 +207,66 @@ namespace RaceGame
             _carCurrentVelocityRatio = Mathf.Clamp(_carForwardVelocity / _gearMaxSpeed, -1f, 1f);
             _carMaxVelocityRatio = Mathf.Clamp(_carForwardVelocity / _maxSpeed, -1f, 1f);
 
-            Debug.Log($"[CARMOTION] Current forward velocity: {_carForwardVelocity:0.00}");
+            //Debug.Log($"[CARMOTION] Current forward velocity: {_carForwardVelocity:0.00}");
         }
 
         private void Accelerate()
         {
             // Split available torque over power wheels
-            //float torquePerWheel = 1f;
-            //float torqueSplit = 0f;
-            //foreach (CarWheel wheel in _powerWheels)
-            //{
-            //    if (wheel.IsGrounded)
-            //        torqueSplit++;
-            //}
+            float torquePerWheel = 1f;
+            float torqueSplit = 0f;
+            foreach (CarWheel wheel in _powerWheels)
+            {
+                if (wheel.IsGrounded)
+                    torqueSplit++;
+            }
 
-            //if(torqueSplit > 0)
-            //    torquePerWheel /= torqueSplit;
+            if(torqueSplit > 0)
+                torquePerWheel /= torqueSplit;
 
             // Add torque to wheels
             foreach (CarWheel wheel in _powerWheels)
             {
-                wheel.ApplyTorque(_torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_playerInput.AccelerateInput - _playerInput.ReverseInput) * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
+                wheel.ApplyTorque(torquePerWheel * _torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_playerInput.AccelerateInput - _playerInput.ReverseInput) * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
             }
         }
 
-        private void BrakeLights()
+        private void RearLightsVisualUpdate()
         {
-            if(_isBraking == false && _playerInput.ReverseInput >= 0.1f && _carForwardVelocity > 0f)
+            const float triggerThreshold = 0.05f;
+
+            if(_isBraking == false && _playerInput.ReverseInput >= triggerThreshold && _carForwardVelocity > 0f)
             {
-                _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsActiveColor);
-                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
-                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+                _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsActiveColor);
+                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
+                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
 
                 _isBraking = true;
             }
-            else if(_isBraking && (_playerInput.ReverseInput < 0.1f || _carForwardVelocity < 0f))
+            else if(_isBraking && (_playerInput.ReverseInput < triggerThreshold || _carForwardVelocity <= 0f))
             {
-                _rearLightsPropertyBlock.SetColor(_materialColorId, Constants.RearLightsInActiveColor);
-                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 2);
-                _vehicleRenderer.SetPropertyBlock(_rearLightsPropertyBlock, 4);
+                _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsInactiveColor);
+                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
+                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
                 
                 _isBraking = false;
+            }
+
+            if(_isReversing == false && _playerInput.ReverseInput >= triggerThreshold && _carForwardVelocity < 0f)
+            {
+                _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsActiveColor);
+                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
+                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
+
+                _isReversing = true;
+            }
+            else if(_isReversing && (_playerInput.ReverseInput < triggerThreshold || _carForwardVelocity >= 0f))
+            {
+                _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsInactiveColor);
+                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
+                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
+
+                _isReversing = false;
             }
         }
 
