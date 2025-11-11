@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MAT_ReverseLights
-  m_Shader: {fileID: 4800000, guid: 314fa196889e39d4084a2991a2684602, type: 3}
-  m_Parent: {fileID: 2100000, guid: e273e5bf32f04c4489ae8a2239a3ae06, type: 2}
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Parent: {fileID: 2100000, guid: 59309343080c83e4588eccf5548f4b32, type: 2}
   m_ModifiedSerializedProperties: 12
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -25,9 +25,9 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Glossiness: 0.343
+    - _Glossiness: 0
     - _Metallic: 0
     m_Colors:
-    - _Color: {r: 0.5, g: 0.2, b: 0.2, a: 1}
+    - _Color: {r: 0.603, g: 0.603, b: 0.603, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
