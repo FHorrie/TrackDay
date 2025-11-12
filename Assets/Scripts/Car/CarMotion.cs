@@ -99,7 +99,7 @@ namespace RaceGame
 
         public float MaxSpeed => _maxSpeed;
 
-        public bool IsAccelerating => _playerInput.AccelerateInput > 0.01f;
+        public bool IsAccelerating => _playerInput.AccelerateInput > 0.05f;
 
         public float GearMaxSpeed => _gearMaxSpeed;
 
@@ -198,7 +198,7 @@ namespace RaceGame
             if(_updateCamera == false) return;
 
             // Increase camera FOV with speed (game feel fast )
-            _freeLook.m_Lens.FieldOfView = _baseFov + _increaseFov * _carMaxVelocityRatio;
+            _freeLook.m_Lens.FieldOfView = _baseFov + Mathf.Clamp(_increaseFov * _carMaxVelocityRatio, 0f, _increaseFov);
         }
 
         private void CalculateCarVelocity()
