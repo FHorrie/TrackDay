@@ -40,9 +40,6 @@ namespace RaceGame
         [SerializeField]
         private Transform _wheelVisualTransform = null;
 
-        [SerializeField]
-        private Rigidbody _carRb = null;
-
         #endregion
 
         #region Fields
@@ -82,7 +79,7 @@ namespace RaceGame
 
         private void UpdateTyre()
         {
-            if (_carRb == null)
+            if (_carMotion == null)
                 return;
 
             float maxLength = _restDistance + _maxSpringOffset;
@@ -93,9 +90,11 @@ namespace RaceGame
             {
                 _isGrounded = true;
 
-                UpdateTyreGrip();
-                UpdateFriction();
-                UpdateSuspension(hitInfo);
+                Rigidbody carRigidBody = _carMotion.CarRigidBody;
+
+                UpdateSuspension(carRigidBody, hitInfo);
+                UpdateFriction(carRigidBody);
+                UpdateTyreGrip(carRigidBody);
             }
             else
             {
@@ -104,13 +103,13 @@ namespace RaceGame
             }
         }
 
-        private void UpdateSuspension(RaycastHit hitInfo)
+        private void UpdateSuspension(Rigidbody carRigidBody, RaycastHit hitInfo)
         {
             //World space direction of spring force
             Vector3 springForceDirection = transform.up;
 
             //World space velocity of the suspension
-            Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
+            Vector3 tyreWorldVelocity = carRigidBody.GetPointVelocity(transform.position);
 
             //Calculate spring offset
             float springOffset = _restDistance - hitInfo.distance;
@@ -126,7 +125,7 @@ namespace RaceGame
             float springForce = (_springStrength * springOffset) - (velocity * _dampingDensity);
 
             //F = (Offset * SpringStrength) - (Vel * Damping)
-            _carRb.AddForceAtPosition(springForce * springForceDirection, transform.position);
+            carRigidBody.AddForceAtPosition(springForce * springForceDirection, transform.position);
 
             //Match wheels to ray transform
             if (_wheelVisualTransform)
@@ -135,10 +134,10 @@ namespace RaceGame
             }
         }
 
-        private void UpdateTyreGrip()
+        private void UpdateTyreGrip(Rigidbody carRigidBody)
         {
             //World space velocity of the suspension
-            Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
+            Vector3 tyreWorldVelocity = carRigidBody.GetPointVelocity(transform.position);
 
             //World space normal of the tyre (right vector)
             Vector3 tyreNormal = transform.right;
@@ -161,13 +160,13 @@ namespace RaceGame
             float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
 
             //F = Mass * Acceleration
-            _carRb.AddForceAtPosition(tyreNormal * _tyreWeight * desiredAccel, _groundedPoint);
+            carRigidBody.AddForceAtPosition(tyreNormal * _tyreWeight * desiredAccel, _groundedPoint);
         }
 
-        private void UpdateFriction()
+        private void UpdateFriction(Rigidbody carRigidBody)
         {
             //World space velocity of tyre
-            Vector3 tyreWorldVelocity = _carRb.GetPointVelocity(transform.position);
+            Vector3 tyreWorldVelocity = carRigidBody.GetPointVelocity(transform.position);
 
             //Tire velocity in forward dir
             Vector3 forwardDirection = transform.forward;
@@ -180,12 +179,12 @@ namespace RaceGame
             float desiredAcceleration = desiredVelocityChange / Time.fixedDeltaTime;
 
             //F = Mass * Acceleration
-            _carRb.AddForceAtPosition(forwardDirection * _tyreWeight * desiredAcceleration, _groundedPoint);
+            carRigidBody.AddForceAtPosition(forwardDirection * _tyreWeight * desiredAcceleration, _groundedPoint);
         }
 
         private void RollTyreVisual()
         {
-            _wheelVisualTransform.Rotate(Vector3.Dot(_carRb.linearVelocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 0, 0);
+            _wheelVisualTransform.Rotate(Vector3.Dot(_carMotion.CarRigidBody.linearVelocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 0, 0);
 
             //if(_shouldLog)
             //    Debug.Log("carVelocity: " + Vector3.Dot(_carRb.velocity, transform.forward));
@@ -195,14 +194,14 @@ namespace RaceGame
         {
             if (_isGrounded)
             {
-                _carRb.AddForceAtPosition(transform.forward * torqueAmount * _peakTorque, _groundedPoint);
+                _carMotion.CarRigidBody.AddForceAtPosition(transform.forward * torqueAmount * _peakTorque, _groundedPoint);
             }
         }
 
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawRay(transform.position, _carRb.GetPointVelocity(transform.position));
+            Gizmos.DrawRay(transform.position, _carMotion.CarRigidBody.GetPointVelocity(transform.position));
         }
 
         #endregion

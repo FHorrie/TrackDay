@@ -12,6 +12,9 @@ namespace RaceGame
 
         [Header("Car Logic")]
         [SerializeField]
+        private Rigidbody _carRigidBody;
+
+        [SerializeField]
         private CarInputManager _playerInput;
 
         [SerializeField]
@@ -58,29 +61,11 @@ namespace RaceGame
         [SerializeField]
         private float _reverseGearRatio = 0;
 
-        [Header("Car Visuals")]
-        [SerializeField]
-        private MeshRenderer _vehicleRenderer;
-
-        [Space]
-        [SerializeField]
-        private Color _brakeLightsActiveColor;
-        [SerializeField]
-        private Color _brakeLightsInactiveColor;
-
-        [Space]
-        [SerializeField]
-        private Color _reverseLightsActiveColor;
-        [SerializeField]
-        private Color _reverseLightsInactiveColor;
-
         #endregion
 
         #region Fields
 
         private bool _updateCamera;
-        private bool _isBraking;
-        private bool _isReversing;
 
         private int _currentGear = 0;
 
@@ -89,28 +74,19 @@ namespace RaceGame
         private float _carCurrentVelocityRatio = 0f;
         private float _carMaxVelocityRatio = 0f;
 
-        private Rigidbody _carRb = null;
-        private MaterialPropertyBlock _brakeLightsPropertyBlock;
-        private MaterialPropertyBlock _reverseLightsPropertyBlock;
-
         #endregion
 
         #region Properties  
 
+        public Rigidbody CarRigidBody => _carRigidBody;
         public float MaxSpeed => _maxSpeed;
-
         public bool IsAccelerating => _playerInput.AccelerateInput > 0.05f;
-
         public float GearMaxSpeed => _gearMaxSpeed;
-
+        public float CarForwardVelocity => _carForwardVelocity;
         public float CarCurrentVelocityRatio => _carCurrentVelocityRatio;
-
         public int SteeringWheelCount => _steeringWheels.Length;
-
         public int BrakingWheelCount => _steeringWheels.Length;
-
         public int PowerWheelCount => _steeringWheels.Length;
-
         public float CurrentFriction => _frictionCurve.Evaluate(_carMaxVelocityRatio);
 
         #endregion
@@ -119,17 +95,7 @@ namespace RaceGame
 
         private void Awake()
         {
-            _carRb = GetComponent<Rigidbody>();
-            if (_carRb == null)
-            {
-                Debug.LogError("Rigdbody was not found");
-            }
-            else
-            {
-                _carRb.centerOfMass = _COM.localPosition;
-            }
-
-            InitializePropertyBlocks();
+            _carRigidBody.centerOfMass = _COM.localPosition;
 
             if (_freeLook != null)
             {
@@ -139,19 +105,6 @@ namespace RaceGame
             _playerInput.ShiftUpPressed += ShiftUp;
             _playerInput.ShiftUpPressed += ShiftDown;
             _playerInput.ResetPressed += ResetCar;
-        }
-
-        private void InitializePropertyBlocks()
-        {
-            _brakeLightsPropertyBlock = new MaterialPropertyBlock();
-            _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsInactiveColor);
-            _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
-            _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
-
-            _reverseLightsPropertyBlock = new MaterialPropertyBlock();
-            _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsInactiveColor);
-            _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
-            _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
         }
 
         private void OnDestroy()
@@ -169,7 +122,6 @@ namespace RaceGame
         {
             TurnWheels();
             UpdateCamera();
-            RearLightsVisualUpdate();
         }
 
         private void FixedUpdate()
@@ -203,7 +155,7 @@ namespace RaceGame
 
         private void CalculateCarVelocity()
         {
-            _carForwardVelocity = Vector3.Dot(_carRb.linearVelocity, transform.forward);
+            _carForwardVelocity = Vector3.Dot(_carRigidBody.linearVelocity, transform.forward);
             _carCurrentVelocityRatio = Mathf.Clamp(_carForwardVelocity / _gearMaxSpeed, -1f, 1f);
             _carMaxVelocityRatio = Mathf.Clamp(_carForwardVelocity / _maxSpeed, -1f, 1f);
 
@@ -228,45 +180,6 @@ namespace RaceGame
             foreach (CarWheel wheel in _powerWheels)
             {
                 wheel.ApplyTorque(torquePerWheel * _torqueCurve.Evaluate(_carCurrentVelocityRatio) * (_playerInput.AccelerateInput - _playerInput.ReverseInput) * Mathf.Sign(_currentGear) * Time.fixedDeltaTime);
-            }
-        }
-
-        private void RearLightsVisualUpdate()
-        {
-            const float triggerThreshold = 0.05f;
-
-            if(_isBraking == false && _playerInput.ReverseInput >= triggerThreshold && _carForwardVelocity > 0f)
-            {
-                _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsActiveColor);
-                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
-                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
-
-                _isBraking = true;
-            }
-            else if(_isBraking && (_playerInput.ReverseInput < triggerThreshold || _carForwardVelocity <= 0f))
-            {
-                _brakeLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _brakeLightsInactiveColor);
-                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 2);
-                _vehicleRenderer.SetPropertyBlock(_brakeLightsPropertyBlock, 4);
-                
-                _isBraking = false;
-            }
-
-            if(_isReversing == false && _playerInput.ReverseInput >= triggerThreshold && _carForwardVelocity < 0f)
-            {
-                _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsActiveColor);
-                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
-                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
-
-                _isReversing = true;
-            }
-            else if(_isReversing && (_playerInput.ReverseInput < triggerThreshold || _carForwardVelocity >= 0f))
-            {
-                _reverseLightsPropertyBlock.SetColor(Constants.ColorPropertyId, _reverseLightsInactiveColor);
-                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 5);
-                _vehicleRenderer.SetPropertyBlock(_reverseLightsPropertyBlock, 6);
-
-                _isReversing = false;
             }
         }
 
