@@ -300,7 +300,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1438221817917864337, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 1769270113}
   m_SourcePrefab: {fileID: 100100000, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
 --- !u!1 &178991685
 GameObject:
@@ -534,7 +537,7 @@ GameObject:
   - component: {fileID: 489261791}
   - component: {fileID: 489261790}
   - component: {fileID: 489261793}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SM_raceTrack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2128,6 +2131,57 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58f0538ca2c97354a850a1c956a314ec, type: 3}
+--- !u!23 &1753537404 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 57490261742951884, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+  m_PrefabInstance: {fileID: 153193213}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1769270111 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1438221817917864337, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+  m_PrefabInstance: {fileID: 153193213}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1769270112 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 973599185943077719, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+  m_PrefabInstance: {fileID: 153193213}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769270111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469c6b5b488e2e940b344e6da9dbd140, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1769270113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769270111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447710c39d50cdd4c8923b869a602e48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vehicleRenderer: {fileID: 1753537404}
+  _carMotion: {fileID: 1769270114}
+  _input: {fileID: 1769270112}
+  _brakeLightsActiveColor: {r: 0.8431373, g: 0.19607845, b: 0.19607845, a: 1}
+  _brakeLightsInactiveColor: {r: 0.5019608, g: 0.20000002, b: 0.20000002, a: 1}
+  _reverseLightsActiveColor: {r: 0.94117653, g: 0.94117653, b: 0.94117653, a: 1}
+  _reverseLightsInactiveColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+--- !u!114 &1769270114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2199120096590606326, guid: 603224ab8bbae304db808cf3cdda1bb4, type: 3}
+  m_PrefabInstance: {fileID: 153193213}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769270111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69a410e4b0d6214e98027159fd3eb17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1902540692
 GameObject:
   m_ObjectHideFlags: 0
