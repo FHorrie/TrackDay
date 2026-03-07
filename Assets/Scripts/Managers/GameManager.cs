@@ -1,24 +1,59 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace RaceGame
 {
-    public static GameManager Instance { get; private set; }
-
-    void Awake()
+    public class GameManager : MonoBehaviour
     {
-        if (Instance != null && Instance != this) 
-        { 
-            Destroy(this); 
-        } 
-        else 
-        { 
-            Instance = this; 
-        } 
-    }
+        #region Editor Fields
+        
+        [SerializeField]
+        private CheckPointTracker _checkPointTracker;
+        
+        #endregion
+        
+        #region Fields
 
-    void Start()
-    {
-        Application.targetFrameRate = 60;
-        QualitySettings.vSyncCount = 0;
+        public CheckPointTracker CheckPointTracker => _checkPointTracker;
+
+        #endregion
+
+        #region Properties
+
+        // Singleton format
+        public static GameManager Instance { get; private set; }
+
+        #endregion
+
+        #region Life Cycle
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this);
+            }
+            else
+            {
+                InitializeManager();
+                Instance = this;
+            }
+        }
+
+        private void Start()
+        {
+            Application.targetFrameRate = 60;
+            QualitySettings.vSyncCount = 0;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void InitializeManager()
+        {
+            
+        }
+
+        #endregion
     }
 }
