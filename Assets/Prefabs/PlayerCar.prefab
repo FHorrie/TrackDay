@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4696856348411185949}
   - component: {fileID: 973599185943077719}
   m_Layer: 0
-  m_Name: Base_Car
+  m_Name: PlayerCar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
