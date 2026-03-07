@@ -49,8 +49,6 @@ namespace RaceGame
         private bool _isGrounded = false;
         private float _brakeFactor;
 
-        public const float BaseBrakeFactor = 0.1f;
-
         #endregion
 
         #region Properties
@@ -147,20 +145,17 @@ namespace RaceGame
             float lateralVelocity = Vector3.Dot(tyreNormal, tyreWorldVelocity);
 
             float lateralVelocityRatio = Mathf.Clamp01(lateralVelocity / _carMotion.GearMaxSpeed);
-
             
-            // DEBUG LOG ////////////////////////////////////////////////////////////////////////////////////////////////
             // Debug.Log($"[CARWHEEL] lateralVelocity: {lateralVelocity}, lateralVelocityRatio: {lateralVelocityRatio}");
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            //the change in velocity that we're looking for is -steeringVel * gripFactor
+            //the change in velocity that we're looking for is -lateralVelocity * gripFactor
             float desiredVelocityChange = -lateralVelocity * _tyreGripCurve.Evaluate(lateralVelocityRatio);
 
             //change turn velocity into acceleration (vel / time)
             float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
 
             //F = Mass * Acceleration
-            carRigidBody.AddForceAtPosition(tyreNormal * _tyreWeight * desiredAccel, _groundedPoint);
+            carRigidBody.AddForceAtPosition(tyreNormal * (_tyreWeight * desiredAccel), _groundedPoint);
         }
 
         private void UpdateFriction(Rigidbody carRigidBody)
@@ -179,12 +174,15 @@ namespace RaceGame
             float desiredAcceleration = desiredVelocityChange / Time.fixedDeltaTime;
 
             //F = Mass * Acceleration
-            carRigidBody.AddForceAtPosition(forwardDirection * _tyreWeight * desiredAcceleration, _groundedPoint);
+            carRigidBody.AddForceAtPosition(forwardDirection * (_tyreWeight * desiredAcceleration), _groundedPoint);
         }
 
         private void RollTyreVisual()
         {
-            _wheelVisualTransform.Rotate(Vector3.Dot(_carMotion.CarRigidBody.linearVelocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 0, 0);
+            _wheelVisualTransform.Rotate(
+                Vector3.Dot(_carMotion.CarRigidBody.linearVelocity, transform.forward) / (_wheelRadius * 2 * Mathf.PI) * 360 * Time.deltaTime, 
+                0, 
+                0);
 
             //if(_shouldLog)
             //    Debug.Log("carVelocity: " + Vector3.Dot(_carRb.velocity, transform.forward));
