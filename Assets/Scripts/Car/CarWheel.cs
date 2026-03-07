@@ -198,8 +198,14 @@ namespace RaceGame
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawRay(transform.position, _carMotion.CarRigidBody.GetPointVelocity(transform.position));
+            // Draw forward force
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(transform.position, 
+                Vector3.Dot(_carMotion.CarRigidBody.GetPointVelocity(transform.position), transform.forward) * transform.forward);
+            // Draw lateral force
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position, 
+                Vector3.Dot(_carMotion.CarRigidBody.GetPointVelocity(transform.position), transform.right) * transform.right);
         }
 
         #endregion
