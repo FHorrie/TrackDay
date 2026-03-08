@@ -7,7 +7,12 @@ namespace RaceGame
     {
         #region Fields
 
-        private bool _isHit = false;
+        
+        #endregion
+        
+        #region Properties
+
+        public int AssignedIndex { get; set; } = -1;
         
         #endregion
         
@@ -15,30 +20,28 @@ namespace RaceGame
         
         private void Start()
         {
-            GameManager.Instance.CheckPointTracker.OnNewLapStarted += ResetCheckPoint;
         }
 
         private void OnDestroy()
         {
-            GameManager.Instance.CheckPointTracker.OnNewLapStarted -= ResetCheckPoint;
         }
 
         #endregion
 
         #region Methods
-
-        public void ResetCheckPoint()
-        {
-            _isHit = false;
-        }
         
         private void OnTriggerEnter(Collider collider)
         {
-            if (_isHit || collider.gameObject.layer != LayerMask.NameToLayer(Constants.PlayerLayerName)) return;
+            if (AssignedIndex == -1)
+            {
+                Debug.LogError(gameObject.name + ": CheckPoint index was never set");
+                return;
+            }
+            
+            if (collider.gameObject.layer != LayerMask.NameToLayer(Constants.PlayerLayerName)) return;
             
             Debug.Log("[CHECKPOINT] Checkpoint hit");
-            _isHit = true;
-            GameManager.Instance.CheckPointTracker.CheckPointHit();
+            GameManager.Instance.CheckPointTracker.CheckPointHit(AssignedIndex);
         }
 
         #endregion

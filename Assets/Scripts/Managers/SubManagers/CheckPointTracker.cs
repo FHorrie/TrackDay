@@ -17,19 +17,19 @@ namespace RaceGame
         private int _checkPointsHit = 0;
         private int _maxCheckPoints = 0;
 
-        private int _lapCounter = 0;
-
         #endregion
 
         #region Properties
 
-        public int LapCounter => _lapCounter;
-        
+        public int LapCounter { get; private set; } = 1;
+
+        public int NextCheckPointIndex { get; private set; } = 0;
+
         #endregion
 
         #region Events
 
-        public event Action OnNewLapStarted;
+        public event Action<int> OnNewLapStarted;
 
         #endregion
 
@@ -46,21 +46,34 @@ namespace RaceGame
 
         private void CalculateCheckPointCount()
         {
+            int indexToAssign = 0;
+            for (int i = 0; i < _checkPoints.Length; ++i)
+            {
+                _checkPoints[i].AssignedIndex = indexToAssign;
+                ++indexToAssign;
+            }
             _maxCheckPoints = _checkPoints.Length;
         }
 
-        public void CheckPointHit()
+        public void CheckPointHit(int hitIndex)
         {
-            _checkPointsHit++;
+            if(NextCheckPointIndex != hitIndex) return;
+            
+            ++_checkPointsHit;
+            ++NextCheckPointIndex;
             Debug.Log($"[CHECKPOINTTRACKER] Checkpoints count: {_checkPointsHit} of {_maxCheckPoints}");
-            if (_checkPointsHit >= _maxCheckPoints)
+            if (_checkPointsHit == _maxCheckPoints)
             {
-                _lapCounter++;
-                _checkPointsHit = 0;
-                for (int i = 0; i < _maxCheckPoints; i++)
-                    _checkPoints[i].ResetCheckPoint();
-                
-                Debug.Log($"[CHECKPOINTTRACKER] All checkpoints hit, starting lap: {_lapCounter}");
+                NextCheckPointIndex = 0;
+            }
+            else if (_checkPointsHit > _maxCheckPoints)
+            {
+                // Offset checkpoints hit by 1
+                // because the starting line checkpoint is hit
+                _checkPointsHit = 1;
+                LapCounter++;
+                OnNewLapStarted?.Invoke(LapCounter);
+                Debug.Log($"[CHECKPOINTTRACKER] All checkpoints hit, starting lap: {LapCounter}");
             }
         }
 
