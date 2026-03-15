@@ -2999,45 +2999,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 82704850977760882, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 82704850977760882, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 75
-      objectReference: {fileID: 0}
-    - target: {fileID: 962977676004432074, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: ed64866106f601f49a75575e6b1bba13, type: 3}
-    - target: {fileID: 962977676004432074, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_Color.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 962977676004432074, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_Color.b
-      value: 0.5411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 962977676004432074, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_Color.g
-      value: 0.5411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 962977676004432074, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_Color.r
-      value: 0.5411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 1717415360724327841, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
-      propertyPath: m_ControlPath
-      value: <Gamepad>/rightStick
-      objectReference: {fileID: 0}
     - target: {fileID: 5871420869672162854, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
       propertyPath: m_Name
       value: UI_Canvas_MobileControls
       objectReference: {fileID: 0}
     - target: {fileID: 5871420869672162854, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6347131770209178598, guid: c68a5ce2920c493458e05a230c878e37, type: 3}
       propertyPath: m_Pivot.x
