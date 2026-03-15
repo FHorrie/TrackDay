@@ -27,12 +27,16 @@ namespace RaceGame
 
         private void Start()
         {
+            if(GameManager.Instance.CheckPointTracker == null) return;
+            
             GameManager.Instance.CheckPointTracker.OnNewLapStarted += UpdateText;
             _text.text = string.Format(_lapFormatString, GameManager.Instance.CheckPointTracker.LapCounter);
         }
 
         private void OnDestroy()
         {
+            if(GameManager.Instance.CheckPointTracker == null) return;
+            
             GameManager.Instance.CheckPointTracker.OnNewLapStarted -= UpdateText;
         }
         
