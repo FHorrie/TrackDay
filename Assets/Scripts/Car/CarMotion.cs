@@ -1,8 +1,5 @@
-using System;
 using Cinemachine;
-using RaceGame.Helpers;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace RaceGame
 {
