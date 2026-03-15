@@ -5,27 +5,10 @@ namespace RaceGame
 {
     public class CheckPoint : MonoBehaviour
     {
-        #region Fields
-
-        
-        #endregion
-        
         #region Properties
 
         public int AssignedIndex { get; set; } = -1;
         
-        #endregion
-        
-        #region Life Cycle
-        
-        private void Start()
-        {
-        }
-
-        private void OnDestroy()
-        {
-        }
-
         #endregion
 
         #region Methods
