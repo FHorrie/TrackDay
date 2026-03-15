@@ -1,19 +1,14 @@
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RaceGame
 {
     public class GameManager : MonoBehaviour
     {
-        #region Editor Fields
-        
-        [SerializeField]
-        private CheckPointTracker _checkPointTracker;
-        
-        #endregion
-        
         #region Fields
 
-        public CheckPointTracker CheckPointTracker => _checkPointTracker;
+        private CheckPointTracker _checkPointTracker;
 
         #endregion
 
@@ -22,6 +17,8 @@ namespace RaceGame
         // Singleton format
         public static GameManager Instance { get; private set; }
 
+        public CheckPointTracker CheckPointTracker => _checkPointTracker;
+        
         #endregion
 
         #region Life Cycle
@@ -34,15 +31,21 @@ namespace RaceGame
             }
             else
             {
-                InitializeManager();
+                DontDestroyOnLoad(gameObject);
+                SceneManager.sceneLoaded += OnSceneLoaded;
                 Instance = this;
             }
         }
 
         private void Start()
         {
-            Application.targetFrameRate = 60;
-            QualitySettings.vSyncCount = 0;
+            InitializeManager();
+            
+            if (Application.isMobilePlatform)
+            {
+                Application.targetFrameRate = 60;
+                QualitySettings.vSyncCount = 0;
+            }
         }
 
         #endregion
@@ -51,7 +54,23 @@ namespace RaceGame
 
         private void InitializeManager()
         {
-            
+            _checkPointTracker = FindFirstObjectByType<CheckPointTracker>();
+            if (_checkPointTracker == null)
+            {
+                Debug.Log("[GAMEMANAGER] No CheckPointTracker found inside " + SceneManager.GetActiveScene().name);
+            }
+            else
+                Debug.Log("[GAMEMANAGER] CheckPointTracker found: " + SceneManager.GetActiveScene().name);
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (mode == LoadSceneMode.Single)
+            {
+                // Re-initialize the manager
+                // when we go to a new scene
+                InitializeManager();
+            }
         }
 
         #endregion
